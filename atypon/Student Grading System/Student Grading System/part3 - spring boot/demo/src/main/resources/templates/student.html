@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>STUDENT AREA</title>
+  <style>
+    div {
+      border: 1px solid black;
+      width: 50%;
+    }
+
+    #main {
+      display: flex;
+
+    }
+  </style>
+
+</head>
+
+<body>
+  <div id="main">
+    <div>
+      get course average
+      <form th:action="@{/student/courseAverage}" method="post">
+        <input type="number" name="courseId">
+        <input type="submit">
+      </form>
+    </div>
+    <div>
+      get my courses
+      <form th:action="@{/student/studentCourses}" method="post">
+        <input type="submit">
+      </form>
+    </div>
+  </div>
+  <div th:if="${result}" id="result">
+    <h3>Results</h3>
+    <span th:utext="${result}"></span>
+  </div>
+
+</body>
+
+</html>

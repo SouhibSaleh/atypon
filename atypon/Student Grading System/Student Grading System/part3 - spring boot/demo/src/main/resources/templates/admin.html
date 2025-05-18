@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>ADMIN AREA</title>
+    <style>
+        div {
+            border: 1px solid black;
+            width: 50%;
+        }
+
+        #main {
+            display: flex;
+            overflow-y:scroll;
+
+        }
+    </style>
+
+</head>
+
+<body>
+    <div id="main">
+        <div>
+            get all admins
+            <form th:action="@{/admin/allAdmins}" method="post">
+                <input type="submit">
+            </form>
+        </div>
+        <div>
+            get all students
+            <form th:action="@{/admin/allStudents}" method="post">
+                <input type="submit">
+            </form>
+        </div>
+        <div>
+            get all courses
+            <form th:action="@{/admin/allCourses}" method="post">
+                <input type="submit">
+            </form>
+        </div>
+        <div>
+            add course to student
+            <form th:action="@{/admin/addCourseToStudent}" method="post">
+                student id: <input type="number" name="studentId">
+                course id: <input type="number" name="courseId">
+                <input type="submit">
+
+            </form>
+        </div>
+        <div>
+            get course average
+            <form th:action="@{/admin/courseAverage}" method="post">
+                course id: <input type="number" name="courseId">
+                <input type="submit">
+            </form>
+        </div>
+
+        <div>
+            update student grade
+            <form th:action="@{/admin/updateStudentGrade}" method="post">
+                student id <input type="number" name="studentId">
+                course id <input type="number" name="courseId">
+                grade <input type="number" name="grade">
+                <input type="submit">
+            </form>
+        </div>
+        <div>
+            add course
+            <form th:action="@{/admin/addCourse}" method="post">
+                course name : <input type="text" name="courseName">
+                <input type="submit">
+            </form>
+        </div>
+        <div>
+            delete course from student
+            <form th:action="@{/admin/deleteCourseFromStudent}" method="post">
+                student id <input type="number" name="studentId">
+                course id <input type="number" name="courseId">
+                <input type="submit">
+            </form>
+        </div>
+        <div>
+            get my courses
+            <form th:action="@{/admin/getMyCourses}" method="post">
+                <input type="submit">
+            </form>
+        </div>
+        <div>
+            delete course
+            <form th:action="@{/admin/deleteCourse}" method="post">
+               course id : <input type="number" name="courseId">
+                <input type="submit">
+            </form>
+        </div>
+
+
+
+
+
+    </div>
+    <div th:if="${result}" id="result">
+        <h3>Results</h3>
+        <span th:utext="${result}"></span>
+    </div>
+
+</body>
+
+</html>

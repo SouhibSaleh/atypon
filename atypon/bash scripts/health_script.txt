@@ -1,0 +1,57 @@
+HEADER='\e[1;36m'
+GREEN='\e[32m'
+RED='\e[31m'
+RESET='\e[0m'
+
+df_output=$(df -k | grep '/mnt/c$')
+
+total_kb=$(echo "$df_output" | awk '{print $2}')
+used_kb=$(echo "$df_output" | awk '{print $3}')
+available_kb=$(echo "$df_output" | awk '{print $4}')
+use_percent=$(echo "$df_output" | awk '{print $5}' | tr -d '%')
+
+echo -e "${HEADER}============ DISK HEALTH ============${RESET}"
+echo "Total Size: $((total_kb/1024/1024))GB"
+echo "Used: $(($used_kb/1024/1024))GB "
+echo "Available: $((available_kb/1024/1024))GB"
+echo "Percentage Of Use: $use_percent"
+if [[ $use_percent -gt 80 ]]; then
+   echo -e "${RED}WARNING: Disk usage is above 80%. Consider cleaning up or expanding storage.${RESET}"
+else
+   echo -e "${GREEN}$Disk usage is within acceptable limits. ${RESET}"
+fi
+echo
+
+echo -e "${HEADER}============ MEMORY USAGE ============${RESET}"
+    memory_output=$(free -m | grep Mem)
+    total_memory=$(echo "$memory_output" | awk '{print $2}')
+    used_memory=$(echo "$memory_output" | awk '{print $3}')
+    free_memory=$(echo "$memory_output" | awk '{print $4}')
+
+    echo "Total Memory: ${total_memory}MB"
+    echo "Used Memory: ${used_memory}MB"
+    echo "Free Memory: ${free_memory}MB"
+
+    memory_usage_percent=$((used_memory * 100 / total_memory))
+    echo "Memory Usage: ${memory_usage_percent}%"
+
+    if [[ $memory_usage_percent -gt 80 ]]; then
+        echo -e "${RED}WARNING: Memory usage is above 80%. Consider closing unused applications or adding more RAM.${RESET}"
+    else
+        echo -e "${GREEN}Memory usage is within acceptable limits.${RESET}"
+    fi
+    echo
+
+
+
+echo
+echo -e "${HEADER}============ WORKING SERVICES ============${RESET}"
+services=$(service --status-all | grep '\[ + \]')
+echo "$services"
+echo -e "${GREEN}Total running services: $(echo "$services" | wc -l)${RESET}"
+echo
+
+
+
+echo -e "${HEADER}============ RECENT SYSTEM UPGRADES ============${RESET}"
+cat /var/log/apt/history.log | tail -n 40

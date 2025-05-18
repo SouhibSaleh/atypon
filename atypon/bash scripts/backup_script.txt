@@ -1,0 +1,50 @@
+help(){
+   echo "Usage:"
+   echo "-h       Display this help message"
+   echo "-c DIR   Compress the specified directory (DIR) into a .tar.gz backup file"
+}
+
+log(){
+   echo "$(date +"%Y-%m-%d %H:%M:%S"): $1" >> "$2"
+}
+
+compress(){
+   if [[ -z $1 ]];then
+      error "The -c flag should recieve a file path"
+      exit 1
+   elif [[ ! -e $1 ]];then
+      error "File Does not exist."
+      exit 1
+   fi
+
+   comp_date=$(date +"%Y%m%d%H%M%S")
+   comp_path="$1_$comp_date"
+   comp_name="$comp_path.tar.gz"
+   log_path="$comp_path/backup_status.log"
+   mkdir -p "$comp_path"
+
+   log "Backup directory created: $comp_path" "$log_path"
+   log "Backup started" "$log_path"
+
+   if tar -czf "$comp_path/$comp_name" "$1";then
+      log "Compression successful !"  "$log_path"
+
+      compressed_size=$(du -sh "$comp_path/$comp_name" | cut -f1)
+      log "Compressed file size: $compressed_size" "$log_path"
+   else
+      log "Compression failed." "$log_path"
+      error "Compression failed."
+   fi
+}
+
+error(){
+  echo "Error:" $1
+}
+
+if [[ $1 == "-h" ]];then
+   help
+elif [[ $1 == "-c" ]];then
+   compress "$2"
+else
+    error "Wrong flag, check -h."
+fi

@@ -1,0 +1,89 @@
+version: "3.8"
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: my-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: mydatabase
+      MYSQL_USER: myuser
+      MYSQL_PASSWORD: mypassword
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - mynetwork
+
+  app:
+    build: ./Authentication
+    container_name: my-auth-app
+    restart: always
+    depends_on:
+      - mysql
+    environment:
+      - DB_HOST=my-mysql
+      - DB_NAME=mydatabase
+      - DB_USER=myuser
+      - DB_PASS=mypassword
+    ports:
+      - "8081:8081"
+    networks:
+      - mynetwork
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8081" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  frontend:
+    image: nginx:alpine
+    container_name: my-frontend
+    restart: always
+    ports:
+      - "6969:80"
+    volumes:
+      - ./frontend/src:/usr/share/nginx/html
+    depends_on:
+      - app
+    networks:
+      - mynetwork
+
+  python-app:
+    build:
+      context: ./analysis
+      dockerfile: Dockerfile
+    container_name: python-app
+    restart: always
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./analysis/src:/app
+    environment:
+      - MONGO_URI=mongodb://mongodb:27017/mydatabase
+    depends_on:
+      - mongodb
+    networks:
+      - mynetwork
+
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - mynetwork
+
+volumes:
+  mysql_data:
+  mongodb_data:
+
+
+networks:
+  mynetwork:
+    driver: bridge
